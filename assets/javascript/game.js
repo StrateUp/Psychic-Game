@@ -1,80 +1,85 @@
-//object creation//
-var game = {
-	wins: 0,
-	losses: 0
-};
 
-//options for both user and computer//
-var options = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
-//setting variables for my p ids//
-var wins = 0;
-var losses = 0;
-var countdown = 9; 
-var userGuess = 0;
+var alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+	var computerChoice = getRandomCharacter();
+	console.log(computerChoice);
+	var wins = 0;
+	var losses = 0;
+	var guesses = 9;
+	var guessesSoFar = "";
 
-//Init display 
-initDisplay();
+	restartGame();
 
-//computer randomly chooses a letter THIS IS CORRECT//
-var computerGuess = options[Math.floor(Math.random() * options.length)];
-console.log(computerGuess);
+	function getRandomCharacter() {
+				
+		var randomIndex = Math.random()* alphabet.length;
 
+		randomIndex = Math.floor(randomIndex);
 
-//when user presses a letter key letter displays in the "Guesses so far" section//
-document.onkeyup = function(event){
-	var userGuess = event.key;
-
-
-	//need a function to run the user guess against the computer guess!!!!!//
-
-	if (userGuess !== computerGuess){
-		//countDownAndRecordResult(losses);
-		document.getElementById("losses").innerHTML = "Losses: " + losses;
-		//computerGuessAgain();
+		return alphabet[randomIndex];
 	}
 
-	if (userGuess === computerGuess){
-		//countDownAndRecordResult(wins);
-		document.getElementById("wins").innerHTML = "Wins: " + wins;
-		//computerGuessAgain();
+	function restartGame(){
+		computerChoice = getRandomCharacter();
+		guessesSoFar = "";
+		guesses = 9;
+
+		ReplaceElementContent("player-wins", wins);
+		ReplaceElementContent("player-losses", losses);
+		ReplaceElementContent("guesses-left", guesses);
+		ReplaceElementContent("guesses-so-far", guessesSoFar);
 	}
 
-	letter(userGuess);
-		
-//if the userguess letter does not match conputerGuess. add 1 to the losses column//
-	//else (){losses++}
-		
-}
+	function ReplaceElementContent(id, content){
+		document.getElementById(id).innerHTML = content;
 
-function letter(userGuess) {
+	}
 
 
-	//The selection prints 
-
-	//To the screen with their guesses
-
-	document.getElementById("userGuess").innerHTML = "Guesses so far: " + userGuess;
-}
-
-//function countDownAndRecordResult(result) {
-	//result++;
-	//countdown--;
-	//document.getElementById("countdown").innerHTML = "Guesses left: " + countdown;
-//}
-
-function countDown() {
-	countdown--;
 	
-}
+	document.onkeyup = function(event){
+	
+		
+		//get user inputted key
+		var userInput = event.key.toLowerCase();
+			
 
-function initDisplay() {
-	document.getElementById("userGuess").innerHTML = "Guesses so far: " + userGuess;
-	document.getElementById("countdown").innerHTML = "Guesses left: " + countdown;
-	document.getElementById("wins").innerHTML = "Wins: " + wins;
-	document.getElementById("losses").innerHTML = "Losses: " + losses;
-}
+			//check if user input is ok; index of is designed this way
+			if(alphabet.indexOf(userInput) === -1) {
+				return;
+			}
+			console.log("user chose:" + userInput);
+			//store in guessessofar
+			if(guessesSoFar === ""){
+			  guessesSoFar = userInput;
 
-//function computerGuessAgain(){
-	//computerGuess = options[Math.floor(Math.random() * options.length)];
-	//console.log(computerGuess);
-//}
+			}else {
+				guessesSoFar = guessesSoFar + ", " + userInput;
+			}
+				console.log("user chose:" + guessesSoFar);
+				ReplaceElementContent("guesses-so-far", guessesSoFar);
+			
+
+			//compare user guess to computer choice
+			if (userInput === computerChoice){
+			wins++;
+				ReplaceElementContent("player-wins", wins);
+				console.log("user has won!");
+			//restart the game
+				restartGame();
+
+		}else{
+			guesses--;
+			console.log("user lost one guess")
+			//made this a function up top: document.getElementById("guesses-left").innerHTML = guesses;
+			ReplaceElementContent("guesses-left", guesses);
+			ReplaceElementContent("guesses-so-far", guessesSoFar);
+			//determine if the user has run out of guesses
+				if(guesses === 0){
+					
+					losses++;
+					ReplaceElementContent("player-losses", losses);
+					restartGame();
+				}
+
+		}
+	}
